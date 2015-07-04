@@ -65,7 +65,7 @@ public class PointImBot implements Runnable {
 
     public static void main(String[] args) {
         try {
-            Thread telegramThread  = new Thread(new PointImBot("115215457:AAHaqzxADZrx6pnGL6k5HlZxtGvNJw_o_9w"));
+            Thread telegramThread  = new Thread(new PointImBot(""));
             telegramThread.start();
             telegramThread.join();
         } catch (InterruptedException e) {
