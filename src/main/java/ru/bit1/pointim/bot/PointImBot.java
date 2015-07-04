@@ -1,71 +1,105 @@
 package ru.bit1.pointim.bot;
 
-import com.codesnippets4all.json.parsers.JsonParserFactory;
-import com.codesnippets4all.json.parsers.JSONParser;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import ru.bit1.pointim.bot.api.PointApi;
+import ru.bit1.pointim.bot.api.TelegramApi;
+import ru.bit1.pointim.bot.pojo.Cache;
+import ru.bit1.pointim.bot.pojo.Message;
+import ru.bit1.pointim.bot.worker.CachePersister;
+import ru.bit1.pointim.bot.worker.InboundHandler;
+import ru.bit1.pointim.bot.worker.OutboundHandler;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.concurrent.*;
 
-/**
- * Created by dmitry on 01/07/15.
- */
 public class PointImBot implements Runnable {
 
-    private final JSONParser parser;
-    private final String telegramToken;
-    private int offset = 0;
+    final static Logger log = Logger.getLogger(TelegramApi.class);
+
+    private final TelegramApi telegram;
+    private final PointApi point;
+    private final Cache cache;
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
+    private final ArrayBlockingQueue<Message> inqueue = new ArrayBlockingQueue<Message>(100);
+    private final ArrayBlockingQueue<Message> outqueue = new ArrayBlockingQueue<Message>(100);
+    private boolean run = true;
 
     public PointImBot(String telegramToken) {
-        this.telegramToken = telegramToken;
-        JsonParserFactory factory= JsonParserFactory.getInstance();
-        parser = factory.newJsonParser();
-
-    }
-
-    public void debug(String message) {
-        System.out.print("["+new Date()+"] "+message + "\n");
+        this.cache = new Cache();
+        this.telegram = new TelegramApi(this.cache, telegramToken);
+        this.point = new PointApi();
+        this.executorService.scheduleAtFixedRate(new InboundHandler(this), 1, 1, TimeUnit.MILLISECONDS);
+        this.executorService.scheduleAtFixedRate(new OutboundHandler(this), 1, 1, TimeUnit.MILLISECONDS);
+        this.executorService.scheduleAtFixedRate(new CachePersister(this.cache), 10000, 10000, TimeUnit.MILLISECONDS);
     }
 
     public void run() {
-        try {
-            HttpsURLConnection urlConnection = (HttpsURLConnection) new URL("https://api.telegram.org/bot"+telegramToken+"/getUpdates?offset="+ Integer.valueOf(offset)).openConnection();
-            urlConnection.connect();
-
-            //Scanner reader = new Scanner(urlConnection.getInputStream());
-            //String responce = reader.useDelimiter("\\A").next();
-
-            Map json  = parser.parseJson(urlConnection.getInputStream(), "utf8");
-            if(json.containsKey("ok")) {
-                for(Map res : ((List<Map>)json.get("result"))) {
-                    offset = Integer.parseInt((String)res.get("update_id")) + 1;
-                    Map message = (Map)res.get("message");
-                    if(message != null && message.containsKey("text")) {
-                        String text = (String) message.get("text");
-                        String user = (String) ((Map)message.get("from")).get("first_name");
-                        String chatid = (String) ((Map)message.get("chat")).get("id");
-                        debug("Message from "+user+" ("+chatid+"): "+text);
+        do {
+            List<Message> messages = this.telegram.getUpdates();
+            boolean put;
+            for (Message msg : messages) {
+                put = false;
+                while (!put) {
+                    try {
+                        inqueue.put(msg);
+                        put = true;
+                    } catch (InterruptedException e) {
+                        log.error(e);
                     }
                 }
             }
 
-            urlConnection.disconnect();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                log.error(e);
+                run = false;
+            }
+        } while (run);
+        executorService.shutdownNow();
+    }
+
+    public Message getInbound() {
+        try {
+            return this.inqueue.take();
+        } catch (InterruptedException e) {
+            return null;
         }
+    }
+
+    public void putOutbound(Message msg) {
+        boolean put = false;
+        while(!put) {
+            try {
+                this.outqueue.put(msg);
+                put = true;
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+        }
+    }
+
+    public Message getOutbound() {
+        try {
+            return this.outqueue.take();
+        } catch (InterruptedException e) {
+            return null;
+        }
+    }
+
+    public TelegramApi getTelegram() {
+        return telegram;
+    }
+
+    public PointApi getPoint() {
+        return point;
     }
 
     public static void main(String[] args) {
         try {
-            Thread telegramThread  = new Thread(new PointImBot(""));
+            BasicConfigurator.configure();
+            Thread telegramThread  = new Thread(new PointImBot(args[0]));
             telegramThread.start();
             telegramThread.join();
         } catch (InterruptedException e) {
