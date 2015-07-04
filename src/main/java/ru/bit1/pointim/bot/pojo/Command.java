@@ -51,13 +51,13 @@ public class Command {
         argcMap.put(Type.UNKNOWN, 0);
 
         description.put(Type.PING, "pong");
-        description.put(Type.LOGIN, "Login to point.im. Usage: login <user> <password>\n");
-        description.put(Type.LOGOUT, "Logout to point.im. Usage: logout\n");
-        description.put(Type.POST, "Create new post. Usage: post <tag1,tag2,tag3> <text>");
-        description.put(Type.SHOW_POST, "Show post content. Usage: #<post_id>\nUsage: get <post_id>");
+        description.put(Type.LOGIN, "Login to point.im.\nUsage: login <user> <password>");
+        description.put(Type.LOGOUT, "Logout to point.im.\nUsage: logout");
+        description.put(Type.POST, "Create new post.\nUsage: post <tag1,tag2,tag3> <text>");
+        description.put(Type.SHOW_POST, "Show post content.\nUsage: #<post_id>\nUsage: get <post_id>");
         description.put(Type.NOT_IMPLEMENTED, "This feauture currently not implemented.\n");
         description.put(Type.UNKNOWN, "Unknown command.");
-        description.put(Type.HELP, "This is bot for point.im microblog service.\nCurrently implemented commands:\nHELP\nLOGIN\nLOGOUT\n");
+        description.put(Type.HELP, "This is bot for point.im microblog service.\nCurrently implemented commands:\nhelp\nlogin\nlogout\npost\nget\n");
     }
 
     public static Type getType(String commandText) {
