@@ -26,38 +26,46 @@ public class InboundHandler implements Runnable {
     }
 
     public void run() {
-        Message msg = this.bot.getInbound();
-        if(msg == null)
-            return;
+        try {
+            Message msg = this.bot.getInbound();
+            if (msg == null)
+                return;
 
-        parser.parseCommand(msg, cmd);
-        log.debug("Parsed command: " + cmd);
+            parser.parseCommand(msg, cmd);
+            log.debug("Parsed command: " + cmd);
 
-        if(cmd.getArgc() != cmd.getArgs().size() || cmd.isDescribeOnly()) {
-            bot.putOutbound(Message.makeTextResponce(msg, Command.describe(cmd)));
-            return;
-        }
+            if (cmd.getArgc() != cmd.getArgs().size() || cmd.isDescribeOnly()) {
+                bot.putOutbound(Message.makeTextResponce(msg, Command.describe(cmd)));
+                return;
+            }
 
-        String error = null;
-        switch (cmd.getType()) {
-            case LOGIN:
-                error = bot.getPoint().login(msg.getUser(), cmd.getArgs().get(0), cmd.getArgs().get(1));
-                bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged in." : error));
-                break;
-            case LOGOUT:
-                error = bot.getPoint().logout(msg.getUser());
-                bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged in." : error));
-                break;
-            case POST:
-                error = bot.getPoint().post(msg.getUser(), Arrays.asList(cmd.getArgs().get(0).split(",")), cmd.getArgs().get(1));
-                bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Post sent." : error));
-                break;
-            case SHOW_POST:
-                error = bot.getPoint().getpost(msg.getUser(), cmd.getArgs().get(0));
-                bot.putOutbound(Message.makeTextResponce(msg, error));
-                break;
-            default:
-                break;
+            String error = null;
+            switch (cmd.getType()) {
+                case LOGIN:
+                    error = bot.getPoint().login(msg.getUser(), cmd.getArgs().get(0), cmd.getArgs().get(1));
+                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged in." : error));
+                    break;
+                case LOGOUT:
+                    error = bot.getPoint().logout(msg.getUser());
+                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged in." : error));
+                    break;
+                case POST:
+                    error = bot.getPoint().post(msg.getUser(), Arrays.asList(cmd.getArgs().get(0).split(",")), cmd.getArgs().get(1), false);
+                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Post sent." : error));
+                    break;
+                case PRIVATE_POST:
+                    error = bot.getPoint().post(msg.getUser(), Arrays.asList(cmd.getArgs().get(0).split(",")), cmd.getArgs().get(1), true);
+                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Post sent." : error));
+                    break;
+                case SHOW_POST:
+                    error = bot.getPoint().getpost(msg.getUser(), cmd.getArgs().get(0));
+                    bot.putOutbound(Message.makeTextResponce(msg, error));
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            log.error("Error in inbound queue!", e);
         }
     }
 }

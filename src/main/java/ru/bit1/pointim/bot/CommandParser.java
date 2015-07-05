@@ -88,14 +88,13 @@ public class CommandParser {
     }
 
     private void parseArgs(Message msg, Command cmd) {
-        ArrayList<String> args = new ArrayList<String>();
         int argc = cmd.getArgc();
         int p = 0;
         p = skipCommandText(msg, p);
         if(argc == 0)
             return;
 
-        while(args.size() < argc-1 && p < msg.getText().length()) {
+        while(cmd.getArgs().size() < argc-1 && p < msg.getText().length()) {
             p = getNextArg(msg, p, cmd);
         }
 

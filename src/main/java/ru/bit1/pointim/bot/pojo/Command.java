@@ -13,6 +13,7 @@ public class Command {
         LOGIN,
         LOGOUT,
         POST,
+        PRIVATE_POST,
         SHOW_POST,
         PING,
         NOT_IMPLEMENTED,
@@ -35,6 +36,9 @@ public class Command {
         typeMap.put("post", Type.POST);
         typeMap.put("#", Type.SHOW_POST);
         typeMap.put("get", Type.SHOW_POST);
+        typeMap.put("ppost", Type.PRIVATE_POST);
+        typeMap.put("pm", Type.PRIVATE_POST);
+        typeMap.put("p", Type.PRIVATE_POST);
 
         describeOnly.add(Type.HELP);
         describeOnly.add(Type.PING);
@@ -45,6 +49,7 @@ public class Command {
         argcMap.put(Type.LOGIN, 2);
         argcMap.put(Type.LOGOUT, 0);
         argcMap.put(Type.POST, 2);
+        argcMap.put(Type.PRIVATE_POST, 2);
         argcMap.put(Type.SHOW_POST, 1);
         argcMap.put(Type.PING, 0);
         argcMap.put(Type.NOT_IMPLEMENTED, 0);
@@ -54,10 +59,14 @@ public class Command {
         description.put(Type.LOGIN, "Login to point.im.\nUsage: login <user> <password>");
         description.put(Type.LOGOUT, "Logout to point.im.\nUsage: logout");
         description.put(Type.POST, "Create new post.\nUsage: post <tag1,tag2,tag3> <text>");
+        description.put(Type.PRIVATE_POST, "Create new private post.\n"+
+                "Usage: ppost <tag1,tag2,tag3> <text>\n" +
+                "Usage: pm <tag1,tag2,tag3> <text>\n" +
+                "Usage: p <tag1,tag2,tag3> <text>");
         description.put(Type.SHOW_POST, "Show post content.\nUsage: #<post_id>\nUsage: get <post_id>");
         description.put(Type.NOT_IMPLEMENTED, "This feauture currently not implemented.\n");
         description.put(Type.UNKNOWN, "Unknown command.");
-        description.put(Type.HELP, "This is bot for point.im microblog service.\nCurrently implemented commands:\nhelp\nlogin\nlogout\npost\nget\n");
+        description.put(Type.HELP, "This is bot for point.im microblog service.\nCurrently implemented commands:\nhelp\nlogin\nlogout\npost\nget\npm\n");
     }
 
     public static Type getType(String commandText) {

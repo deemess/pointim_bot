@@ -1,6 +1,7 @@
 package ru.bit1.pointim.bot.api;
 
 import org.apache.log4j.Logger;
+import org.javatuples.Pair;
 import org.json.simple.parser.JSONParser;
 import ru.bit1.pointim.bot.pojo.Message;
 import ru.bit1.pointim.bot.pojo.User;
@@ -26,12 +27,12 @@ public class PointApi {
 
     }
 
-    private String callApiGet(String method, Map<String,String> params, String token) throws IOException {
+    private String callApiGet(String method, List<Pair<String,String>> params, String token) throws IOException {
         StringBuilder sb = new StringBuilder();
-        for(Map.Entry<String,String> entry : params.entrySet()) {
-            sb.append(entry.getKey());
+        for(Pair<String,String> entry : params) {
+            sb.append(entry.getValue0());
             sb.append("=");
-            sb.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            sb.append(URLEncoder.encode(entry.getValue1(), "UTF-8"));
             sb.append("&");
         }
 
@@ -48,15 +49,15 @@ public class PointApi {
         return responce;
     }
 
-    private String callApiPost(String method, Map<String,String> headers, String token, String csrf_token) throws IOException {
+    private String callApiPost(String method, List<Pair<String,String>> params, String token, String csrf_token) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) new URL("http://point.im/api/"+method).openConnection();
         urlConnection.setRequestMethod("POST");
 
         StringBuilder sb = new StringBuilder();
-        for(Map.Entry<String,String> entry : headers.entrySet()) {
-            sb.append(entry.getKey());
+        for(Pair<String,String> entry : params) {
+            sb.append(entry.getValue0());
             sb.append("=");
-            sb.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            sb.append(URLEncoder.encode(entry.getValue1(), "UTF-8"));
             sb.append("&");
         }
         byte[] buff = sb.toString().getBytes("utf8");
@@ -83,21 +84,21 @@ public class PointApi {
         return responce;
     }
 
-    private String callApiPost(String method, Map<String,String> headers) throws IOException {
-        return callApiPost(method, headers, null, null);
+    private String callApiPost(String method, List<Pair<String,String>> params) throws IOException {
+        return callApiPost(method, params, null, null);
     }
 
-    private String callApiPost(String method, Map<String,String> headers, String token) throws IOException {
-        return callApiPost(method, headers, token, null);
+    private String callApiPost(String method, List<Pair<String,String>> params, String token) throws IOException {
+        return callApiPost(method, params, token, null);
     }
 
     public String login(User user, String login, String password) {
         if(user.isPointLoggedIn())
             return "Already logged in.";
         try {
-            HashMap<String,String> params = new HashMap<String, String>();
-            params.put("login", login);
-            params.put("password", password);
+            ArrayList<Pair<String,String>> params = new ArrayList<>();
+            params.add(new Pair<>("login", login));
+            params.add(new Pair<>("password", password));
             String responce = callApiPost("login", params);
 
             Map json  = (Map)parser.parse(responce);
@@ -121,8 +122,8 @@ public class PointApi {
             if (!user.isPointLoggedIn())
                 return "Login first.";
 
-            HashMap<String, String> params = new HashMap<String, String>();
-            params.put("csrf_token", user.getPointCsrf_token());
+            ArrayList<Pair<String,String>> params = new ArrayList<>();
+            params.add(new Pair<>("csrf_token", user.getPointCsrf_token()));
             String responce = callApiPost("logout", params, user.getPointToken());
 
             Map json = (Map) parser.parse(responce);
@@ -141,20 +142,19 @@ public class PointApi {
 
     }
 
-    public String post(User user, Collection<String> tags, String text) {
+    public String post(User user, Collection<String> tags, String text, boolean isprivate) {
         try {
             if (!user.isPointLoggedIn())
                 return "Login first.";
 
-            StringBuilder sb =new StringBuilder();
-            for(String tag : tags) {
-                sb.append(tag);
-                sb.append(",");
-            }
+            ArrayList<Pair<String,String>> params = new ArrayList<>();
 
-            HashMap<String, String> params = new HashMap<String, String>();
-            params.put("text", text);
-            params.put("tag", sb.toString());
+            for(String tag : tags) {
+                params.add(new Pair<>("tag", tag));
+            }
+            params.add(new Pair<>("text", text));
+            if(isprivate)
+                params.add(new Pair<>("private","true"));
             String responce = callApiPost("post", params, user.getPointToken(), user.getPointCsrf_token());
 
             Map json = (Map) parser.parse(responce);
@@ -173,7 +173,7 @@ public class PointApi {
             if (!user.isPointLoggedIn())
                 return "Login first.";
 
-            String responce = callApiGet("post/" + postid, Collections.EMPTY_MAP, user.getPointToken());
+            String responce = callApiGet("post/" + postid, Collections.EMPTY_LIST, user.getPointToken());
 
             Map json = (Map) parser.parse(responce);
             if (json.containsKey("post")) {
