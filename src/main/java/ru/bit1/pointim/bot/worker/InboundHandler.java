@@ -47,7 +47,7 @@ public class InboundHandler implements Runnable {
                     break;
                 case LOGOUT:
                     error = bot.getPoint().logout(msg.getUser());
-                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged in." : error));
+                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged out." : error));
                     break;
                 case POST:
                     error = bot.getPoint().post(msg.getUser(), Arrays.asList(cmd.getArgs().get(0).split(",")), cmd.getArgs().get(1), false);

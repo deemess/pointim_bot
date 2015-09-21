@@ -28,7 +28,7 @@ public class CachePersister implements Runnable {
                 in.close();
             }
             log.info("Done.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Unable to restore cache from file!", e);
         }
     }

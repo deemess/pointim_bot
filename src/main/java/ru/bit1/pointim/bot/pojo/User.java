@@ -1,7 +1,20 @@
 package ru.bit1.pointim.bot.pojo;
 
+import ru.bit1.pointim.bot.PointImBot;
+import ru.bit1.pointim.bot.api.PointWebSocketClient;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 import javax.xml.bind.DatatypeConverter;
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.KeyStore;
 import java.util.Scanner;
 
 /**
@@ -87,7 +100,7 @@ public class User {
         return DatatypeConverter.printBase64Binary(sb.toString().getBytes("utf8"));
     }
 
-    public static User deserialize(String line, IObjectUpdateListener listener) throws UnsupportedEncodingException {
+    public static User deserialize(String line, IObjectUpdateListener listener, PointImBot bot) throws UnsupportedEncodingException, URISyntaxException {
         String lines = new String(DatatypeConverter.parseBase64Binary(line), "utf8");
         Scanner scanner = new Scanner(lines);
         String name = scanner.nextLine();
@@ -100,8 +113,16 @@ public class User {
         user.setChatid(Long.valueOf(chatid));
         if(!"".equals(ptoken)) user.setPointToken(ptoken);
         if(!"".equals(pcsrftoken)) user.setPointCsrf_token(pcsrftoken);
+        user.onLoad(bot);
 
         return  user;
+    }
+
+    private void onLoad(PointImBot bot) throws URISyntaxException {
+        if(this.isPointLoggedIn()) {
+            PointWebSocketClient ws = new PointWebSocketClient(new URI("ws://point.im/ws"), this.pointToken, this, bot);
+            ws.connect();
+        }
     }
 
     public boolean isPointLoggedIn() {

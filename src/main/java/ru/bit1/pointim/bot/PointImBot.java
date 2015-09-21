@@ -26,7 +26,7 @@ public class PointImBot implements Runnable {
     private boolean run = true;
 
     public PointImBot(String telegramToken) {
-        this.cache = new Cache();
+        this.cache = new Cache(this);
         this.telegram = new TelegramApi(this.cache, telegramToken);
         this.point = new PointApi();
         this.executorService.scheduleAtFixedRate(new InboundHandler(this), 1, 1, TimeUnit.MILLISECONDS);

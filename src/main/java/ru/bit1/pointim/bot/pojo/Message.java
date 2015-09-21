@@ -58,4 +58,14 @@ public class Message {
         return ret;
     }
 
+    public static Message makeTextMessage(User user, String text) {
+        Message ret = new Message();
+
+        ret.setUser(user);
+        ret.setType(MessageType.TEXT);
+        ret.setText(text);
+
+        return ret;
+    }
+
 }
