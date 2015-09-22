@@ -32,7 +32,8 @@ public class InboundHandler implements Runnable {
                 return;
 
             parser.parseCommand(msg, cmd);
-            log.debug("Parsed command: " + cmd);
+            if(cmd.getType() != Command.Type.LOGIN)
+                log.debug("Parsed command: " + cmd);
 
             if (cmd.getArgc() != cmd.getArgs().size() || cmd.isDescribeOnly()) {
                 bot.putOutbound(Message.makeTextResponce(msg, Command.describe(cmd)));
@@ -44,10 +45,16 @@ public class InboundHandler implements Runnable {
                 case LOGIN:
                     error = bot.getPoint().login(msg.getUser(), cmd.getArgs().get(0), cmd.getArgs().get(1));
                     bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged in." : error));
+                    if(error == null) {
+                        msg.getUser().enableNotifications(bot);
+                    }
                     break;
                 case LOGOUT:
                     error = bot.getPoint().logout(msg.getUser());
                     bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Logged out." : error));
+                    if(error == null) {
+                        msg.getUser().disableNotifications();
+                    }
                     break;
                 case POST:
                     error = bot.getPoint().post(msg.getUser(), Arrays.asList(cmd.getArgs().get(0).split(",")), cmd.getArgs().get(1), false);

@@ -4,12 +4,7 @@ import org.apache.log4j.Logger;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_10;
-import org.java_websocket.drafts.Draft_17;
-import org.java_websocket.drafts.Draft_75;
-import org.java_websocket.drafts.Draft_76;
 import org.java_websocket.framing.Framedata;
-import org.java_websocket.framing.FramedataImpl1;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,7 +13,6 @@ import ru.bit1.pointim.bot.pojo.Message;
 import ru.bit1.pointim.bot.pojo.User;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -31,10 +25,11 @@ public class PointWebSocketClient extends WebSocketClient {
     private JSONParser parser = new JSONParser();
     private User user;
     private PointImBot bot;
+    private boolean connected = false;
 
     public PointWebSocketClient(URI serverURI, String token, User user, PointImBot bot) {
         super(serverURI,new Draft_10cust());
-        WebSocketImpl.DEBUG = true;
+        //WebSocketImpl.DEBUG = true;
         this.token = token;
         this.user = user;
         this.bot = bot;
@@ -53,6 +48,9 @@ public class PointWebSocketClient extends WebSocketClient {
     @Override
     public void onMessage(String s) {
         log.info("On Message: " + s);
+        if(!connected)
+            connected = true;
+
         if("ping".equals(s))
             return;
 
@@ -68,7 +66,7 @@ public class PointWebSocketClient extends WebSocketClient {
             return;
         }
 
-        String text = null, author = null, totext = null;
+        String text = null, author = null, totext = null, post_id = null, html = null;
 
         if(json.containsKey("text")) {
             text = (String)json.get("text");
@@ -79,29 +77,64 @@ public class PointWebSocketClient extends WebSocketClient {
         if(json.containsKey("to_text")) {
             totext = (String)json.get("to_text");
         }
+        if(json.containsKey("post_id")) {
+            post_id = (String)json.get("post_id");
+        }
+        if(json.containsKey("html")) {
+            html = (String)json.get("html");
+        }
 
-        bot.putOutbound(Message.makeTextMessage(user, ">"+totext + "\n" + author + ": " + text));
+        StringBuilder post = new StringBuilder();
+        post.append("@");
+        post.append(author);
+        post.append(":\n");
+        if(totext != null && !"".equals(totext)) {
+            post.append(">> ");
+            if(totext.length() < 100) {
+                post.append(totext);
+            } else {
+                post.append(totext.substring(0, 100));
+                post.append(" ...");
+            }
+            post.append("\n");
+        }
+        post.append(text);
+        post.append("\n#");
+        post.append(post_id);
+        post.append(" ");
+        post.append("http://point.im/");
+        post.append(post_id);
+
+        bot.putOutbound(Message.makeTextMessage(user, post.toString()));
     }
 
     @Override
     public void onClose(int i, String s, boolean b) {
-        log.info("On Close: " + i + " " + s +" " + b);
+        connected = false;
+        log.info("On Close: " + i + " " + s + " " + b);
     }
 
     @Override
     public void onWebsocketPing(WebSocket conn, Framedata f) {
+        connected = true;
         log.info("ping");
         super.onWebsocketPing(conn, f);
     }
 
     @Override
     public void onWebsocketPong(WebSocket conn, Framedata f) {
+        connected = true;
         log.info("pong");
         super.onWebsocketPong(conn, f);
     }
 
     @Override
     public void onError(Exception e) {
+        connected = false;
         log.error("On Error.", e);
+    }
+
+    public boolean isConnected() {
+        return this.connected;
     }
 }

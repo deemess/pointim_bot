@@ -25,6 +25,7 @@ public class User {
     private Long chatid;
     private String pointToken;
     private String pointCsrf_token;
+    private PointWebSocketClient webSocket;
 
     private final IObjectUpdateListener listener;
 
@@ -118,15 +119,35 @@ public class User {
         return  user;
     }
 
-    private void onLoad(PointImBot bot) throws URISyntaxException {
+    private void onLoad(PointImBot bot) {
         if(this.isPointLoggedIn()) {
-            PointWebSocketClient ws = new PointWebSocketClient(new URI("ws://point.im/ws"), this.pointToken, this, bot);
-            ws.connect();
+            try {
+                webSocket = new PointWebSocketClient(new URI("ws://point.im/ws"), this.pointToken, this, bot);
+            } catch (URISyntaxException e) {
+            }
+            webSocket.connect();
         }
     }
 
     public boolean isPointLoggedIn() {
         return (pointToken != null && !"".equals(pointToken)) &&
                 (pointCsrf_token != null && !"".equals(pointCsrf_token));
+    }
+
+    public void enableNotifications(PointImBot bot) {
+        if(webSocket == null && isPointLoggedIn()) {
+            try {
+                webSocket = new PointWebSocketClient(new URI("ws://point.im/ws"), this.pointToken, this, bot);
+            } catch (URISyntaxException e) {
+            }
+            webSocket.connect();
+        }
+    }
+
+    public void disableNotifications() {
+        if(webSocket != null) {
+            if(webSocket.isConnected()) webSocket.close();
+            webSocket = null;
+        }
     }
 }

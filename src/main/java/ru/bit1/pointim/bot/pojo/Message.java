@@ -4,6 +4,7 @@ package ru.bit1.pointim.bot.pojo;
  * Created by dmitry on 04/07/15.
  */
 public class Message {
+
     public enum MessageType {
         TEXT,
         IMAGE,
@@ -14,6 +15,7 @@ public class Message {
     private String text;
     private MessageType type;
     private User user;
+    private String replyTo;
 
     public Message() {
 
@@ -25,6 +27,14 @@ public class Message {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
+    }
+
+    public String getReplyTo() {
+        return replyTo;
     }
 
     public MessageType getType() {
@@ -45,7 +55,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return "{type="+type+"; user="+user+"; text="+text+";}";
+        return "{type="+type+"; user="+user+"; text="+text+";reply_to="+replyTo+";}";
     }
 
     public static Message makeTextResponce(Message msg, String text) {

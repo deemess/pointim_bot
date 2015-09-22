@@ -50,6 +50,11 @@ public class TelegramApi {
                     Map message = (Map)res.get("message");
                     if(message != null && message.containsKey("text")) {
                         String text = (String) message.get("text");
+                        String replyTo = null;
+                        Map reply_to_message = (Map) message.get("reply_to_message");
+                        if(reply_to_message != null && reply_to_message.containsKey("text")) {
+                            replyTo = (String)reply_to_message.get("text");
+                        }
                         String from = (String) ((Map)message.get("from")).get("first_name");
                         Long chatid = (Long) ((Map)message.get("chat")).get("id");
                         User user = this.cache.getUser(chatid, from);
@@ -57,9 +62,10 @@ public class TelegramApi {
                         msg.setUser(user);
                         msg.setType(Message.MessageType.TEXT);
                         msg.setText(text);
+                        msg.setReplyTo(replyTo);
 
                         messages.add(msg);
-                        log.debug("Received Message: " + msg);
+                        //log.debug("Received Message: " + msg);
                     }
                 }
             }
