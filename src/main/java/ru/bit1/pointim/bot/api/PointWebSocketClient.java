@@ -13,6 +13,7 @@ import ru.bit1.pointim.bot.pojo.Message;
 import ru.bit1.pointim.bot.pojo.User;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,13 +67,18 @@ public class PointWebSocketClient extends WebSocketClient {
             return;
         }
 
-        String text = null, author = null, totext = null, post_id = null, html = null;
+        String text = null, author = null, totext = null, post_id = null, html = null, tags = "";
 
         if(json.containsKey("text")) {
             text = (String)json.get("text");
         }
         if(json.containsKey("author")) {
             author = (String)json.get("author");
+        }
+        if(json.containsKey("tags")) {
+            for(Object tag : (List)json.get("tags")) {
+                tags += "*"+tag.toString() + " ";
+            }
         }
         if(json.containsKey("to_text")) {
             totext = (String)json.get("to_text");
@@ -87,7 +93,9 @@ public class PointWebSocketClient extends WebSocketClient {
         StringBuilder post = new StringBuilder();
         post.append("@");
         post.append(author);
-        post.append(":\n");
+        post.append(": ");
+        post.append(tags);
+        post.append("\n");
         if(totext != null && !"".equals(totext)) {
             post.append(">> ");
             if(totext.length() < 100) {
