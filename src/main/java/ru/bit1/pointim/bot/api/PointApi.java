@@ -168,6 +168,30 @@ public class PointApi {
         return "Unablel to create post!";
     }
 
+    public String comment(User user, String text, String postid, String to_comment) {
+        try {
+            if (!user.isPointLoggedIn())
+                return "Login first.";
+
+            ArrayList<Pair<String,String>> params = new ArrayList<>();
+
+            params.add(new Pair<>("text", text));
+            if(to_comment != null)
+                params.add(new Pair<>("comment_id", to_comment));
+
+            String responce = callApiPost("post/"+postid, params, user.getPointToken(), user.getPointCsrf_token());
+
+            Map json = (Map) parser.parse(responce);
+            if (json.containsKey("id")) {
+                return "Comment #" + json.get("id") + " added. http://point.im/"+json.get("id");
+            }
+
+        } catch (Exception e) {
+            log.error("Unablel to create comment!", e);
+        }
+        return "Unablel to create comment!";
+    }
+
     public String getpost(User user, String postid) {
         try {
             if (!user.isPointLoggedIn())

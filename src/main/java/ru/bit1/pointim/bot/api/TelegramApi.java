@@ -63,7 +63,9 @@ public class TelegramApi {
                         msg.setType(Message.MessageType.TEXT);
                         msg.setText(text);
                         msg.setReplyTo(replyTo);
-
+                        if(replyTo != null && replyTo.length() > 0) {
+                            msg.setType(Message.MessageType.COMMENT);
+                        }
                         messages.add(msg);
                         //log.debug("Received Message: " + msg);
                     }

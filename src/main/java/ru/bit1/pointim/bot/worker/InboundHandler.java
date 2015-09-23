@@ -68,6 +68,9 @@ public class InboundHandler implements Runnable {
                     error = bot.getPoint().getpost(msg.getUser(), cmd.getArgs().get(0));
                     bot.putOutbound(Message.makeTextResponce(msg, error));
                     break;
+                case COMMENT:
+                    error = bot.getPoint().comment(msg.getUser(), cmd.getArgs().get(0), cmd.getArgs().get(1), cmd.getArgc() == 3 ? cmd.getArgs().get(2):null);
+                    bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Commend added." : error));
                 default:
                     break;
             }

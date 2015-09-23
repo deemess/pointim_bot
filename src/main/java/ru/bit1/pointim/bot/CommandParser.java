@@ -4,11 +4,15 @@ import ru.bit1.pointim.bot.pojo.Command;
 import ru.bit1.pointim.bot.pojo.Message;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by dmitry on 04/07/15.
  */
 public class CommandParser {
+
+    Pattern pattern = Pattern.compile("#([a-z]+)/*([0-9]*)\\s+http://point.im/");
 
     public CommandParser() {
     }
@@ -113,6 +117,28 @@ public class CommandParser {
         }
     }
 
+    private void parseCommentCommand(Message msg, Command cmd) {
+        Matcher matcher = pattern.matcher(msg.getReplyTo());
+        if(matcher.find()) {
+            ArrayList<String> args = new ArrayList<>();
+            args.add(msg.getText());
+
+            String postid = matcher.group(1);
+            if(postid != null && postid.length() > 0)
+                args.add(postid);
+
+            String commentid = matcher.group(2);
+            if(commentid != null && commentid.length() > 0)
+                args.add(commentid);
+
+            cmd.setArgs(args);
+            cmd.setArgc(args.size());
+            cmd.setType(Command.Type.COMMENT);
+        } else {
+            //return "Unable to find post id and/or comment id!";
+        }
+    }
+
     public void parseCommand(Message msg, Command cmd) {
         cmd.setArgc(0);
         cmd.setType(Command.Type.NOT_IMPLEMENTED);
@@ -121,6 +147,9 @@ public class CommandParser {
         switch (msg.getType()) {
             case TEXT:
                 parseTextCommand(msg, cmd);
+                break;
+            case COMMENT:
+                parseCommentCommand(msg, cmd);
                 break;
             default:
                 cmd.setType(Command.Type.NOT_IMPLEMENTED);

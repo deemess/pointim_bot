@@ -17,7 +17,8 @@ public class Command {
         SHOW_POST,
         PING,
         NOT_IMPLEMENTED,
-        UNKNOWN
+        UNKNOWN,
+        COMMENT
     }
 
     private static final HashMap<Type, String> description = new HashMap<Type, String>();

@@ -67,8 +67,24 @@ public class PointWebSocketClient extends WebSocketClient {
             return;
         }
 
-        String text = null, author = null, totext = null, post_id = null, html = null, tags = "";
+        String text = null, author = null, totext = null, post_id = null, html = null, tags = "", a = null, post_author="",post_text="";
+        String comments = "", comment_id="";
 
+        if(json.containsKey("comment_id") && json.get("comment_id") != null) {
+            comment_id = json.get("comment_id").toString();
+        }
+        if(json.containsKey("comments") && json.get("comments") != null) {
+            comments = json.get("comments").toString();
+        }
+        if(json.containsKey("post_text") && json.get("post_text") != null) {
+            post_text = (String)json.get("post_text");
+        }
+        if(json.containsKey("post_author") && json.get("post_author") != null) {
+            post_author = (String)json.get("post_author");
+        }
+        if(json.containsKey("a")) {
+            a = (String)json.get("a");
+        }
         if(json.containsKey("text")) {
             text = (String)json.get("text");
         }
@@ -91,24 +107,53 @@ public class PointWebSocketClient extends WebSocketClient {
         }
 
         StringBuilder post = new StringBuilder();
-        post.append("@");
-        post.append(author);
-        post.append(": ");
-        post.append(tags);
-        post.append("\n");
-        if(totext != null && !"".equals(totext)) {
-            post.append(">> ");
-            if(totext.length() < 100) {
-                post.append(totext);
+        if("rec".equals(a)) { //recommendation
+            post.append("@");
+            post.append(author);
+            post.append(" recommends: ");
+            post.append(text);
+            post.append("\n");
+            post.append("@");
+            post.append(post_author);
+            post.append(": ");
+            post.append(tags);
+            post.append("\n");
+            if(post_text.length() < 1000) {
+                post.append(post_text);
             } else {
-                post.append(totext.substring(0, 100));
+                post.append(post_text.substring(0, 1000));
                 post.append(" ...");
             }
+        } else { //simple post or comment
+            post.append("@");
+            post.append(author);
+            if("post_edited".equals(a)) {
+                post.append(" edited ");
+            }
+            post.append(": ");
+            post.append(tags);
             post.append("\n");
+            if (totext != null && !"".equals(totext)) {
+                post.append(">> ");
+                if (totext.length() < 100) {
+                    post.append(totext);
+                } else {
+                    post.append(totext.substring(0, 100));
+                    post.append(" ...");
+                }
+                post.append("\n");
+            }
+            post.append(text);
         }
-        post.append(text);
         post.append("\n#");
         post.append(post_id);
+        if(comments.length() > 0) {
+            post.append("/");
+            post.append(comments);
+        } else if(comment_id.length() > 0) {
+            post.append("/");
+            post.append(comment_id);
+        }
         post.append(" ");
         post.append("http://point.im/");
         post.append(post_id);

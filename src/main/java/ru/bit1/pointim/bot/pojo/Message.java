@@ -7,6 +7,7 @@ public class Message {
 
     public enum MessageType {
         TEXT,
+        COMMENT,
         IMAGE,
         AUDIO,
         DOCUMENT
