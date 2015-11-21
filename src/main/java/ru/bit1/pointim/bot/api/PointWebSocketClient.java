@@ -67,7 +67,7 @@ public class PointWebSocketClient extends WebSocketClient {
             return;
         }
 
-        String text = null, author = null, totext = null, post_id = null, html = null, tags = "", a = null, post_author="",post_text="";
+        String text = "", author = null, totext = null, post_id = null, html = null, tags = "", a = null, post_author="",post_text="";
         String comments = "", comment_id="";
 
         if(json.containsKey("comment_id") && json.get("comment_id") != null) {
@@ -82,16 +82,16 @@ public class PointWebSocketClient extends WebSocketClient {
         if(json.containsKey("post_author") && json.get("post_author") != null) {
             post_author = (String)json.get("post_author");
         }
-        if(json.containsKey("a")) {
+        if(json.containsKey("a") && json.get("a") != null) {
             a = (String)json.get("a");
         }
-        if(json.containsKey("text")) {
+        if(json.containsKey("text") && json.get("text") != null) {
             text = (String)json.get("text");
         }
-        if(json.containsKey("author")) {
+        if(json.containsKey("author") && json.get("author") != null) {
             author = (String)json.get("author");
         }
-        if(json.containsKey("tags")) {
+        if(json.containsKey("tags") && json.get("tags") != null) {
             for(Object tag : (List)json.get("tags")) {
                 tags += "*"+tag.toString() + " ";
             }
@@ -165,6 +165,7 @@ public class PointWebSocketClient extends WebSocketClient {
     public void onClose(int i, String s, boolean b) {
         connected = false;
         log.info("On Close: " + i + " " + s + " " + b);
+        this.user.onWebSocketClose(this.bot);
     }
 
     @Override

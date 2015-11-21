@@ -150,4 +150,11 @@ public class User {
             webSocket = null;
         }
     }
+
+    public void onWebSocketClose(PointImBot bot) {
+        if(webSocket != null) {
+            webSocket = null;
+            this.enableNotifications(bot);
+        }
+    }
 }
