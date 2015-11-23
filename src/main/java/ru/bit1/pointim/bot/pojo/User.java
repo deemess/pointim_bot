@@ -22,6 +22,7 @@ import java.util.Scanner;
  */
 public class User {
     private String name;
+    private String login;
     private Long chatid;
     private String pointToken;
     private String pointCsrf_token;
@@ -31,6 +32,14 @@ public class User {
 
     public User(IObjectUpdateListener listener) {
         this.listener = listener;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getName() {
@@ -85,7 +94,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "{name="+name+"; chatid="+chatid+";}";
+        return "{login="+login+"; name="+name+"; chatid="+chatid+";}";
     }
 
     public static String serialize(User user) throws UnsupportedEncodingException {

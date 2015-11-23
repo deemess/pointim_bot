@@ -64,10 +64,11 @@ public class PointWebSocketClient extends WebSocketClient {
 
         if(json.containsKey("login")) {
             bot.putOutbound(Message.makeTextMessage(user, "Notifications enabled for user @"+json.get("login")+"!"));
+            user.setLogin(json.get("login").toString());
             return;
         }
 
-        String text = "", author = null, totext = null, post_id = null, html = null, tags = "", a = null, post_author="",post_text="";
+        String text = "", author = "", totext = null, post_id = null, html = null, tags = "", a = null, post_author="",post_text="";
         String comments = "", comment_id="", files="";
 
         if(json.containsKey("files") && json.get("files") != null) {
@@ -111,6 +112,9 @@ public class PointWebSocketClient extends WebSocketClient {
             html = (String)json.get("html");
         }
 
+        if(author.equals(user.getLogin())) //skip self notifications
+            return;
+
         StringBuilder post = new StringBuilder();
         if("rec".equals(a)) { //recommendation
             post.append("@");
@@ -133,7 +137,34 @@ public class PointWebSocketClient extends WebSocketClient {
                 post.append("\n");
                 post.append(files);
             }
-        } else { //simple post or comment
+            post.append("\n#");
+            post.append(post_id);
+            if(comments.length() > 0) {
+                post.append("/");
+                post.append(comments);
+            } else if(comment_id.length() > 0) {
+                post.append("/");
+                post.append(comment_id);
+            }
+            post.append(" ");
+            post.append("http://point.im/");
+            post.append(post_id);
+        } else if ("ok".equals(a)) { //post recommended
+            post.append("@");
+            post.append(author);
+            post.append(" recommends your post #");
+            post.append(post_id);
+            post.append(" ");
+            post.append("http://point.im/");
+            post.append(post_id);
+        } else if ("sub".equals(a)) { //user subscribed to your blog
+            if(json.containsKey("from") && json.get("from") != null) {
+                String from = (String)json.get("from");
+                post.append("@");
+                post.append(from);
+                post.append(" subscribed to your blog.");
+            }
+        }else { //simple post or comment
             post.append("@");
             post.append(author);
             if("post_edited".equals(a)) {
@@ -150,28 +181,32 @@ public class PointWebSocketClient extends WebSocketClient {
                     post.append(totext.substring(0, 100));
                     post.append(" ...");
                 }
-                post.append("\n");
+                post.append("\n\n");
             }
             post.append(text);
             if(!"".equals(files)) {
                 post.append("\n");
                 post.append(files);
             }
+            post.append("\n#");
+            post.append(post_id);
+            /*if(comments.length() > 0) {
+                post.append("/");
+                post.append(comments);
+            } else*/ if(comment_id.length() > 0) {
+                post.append("/");
+                post.append(comment_id);
+            }
+            post.append(" ");
+            post.append("http://point.im/");
+            post.append(post_id);
+            if(comment_id.length() > 0) {
+                post.append("#");
+                post.append(comment_id);
+            }
         }
-        post.append("\n#");
-        post.append(post_id);
-        if(comments.length() > 0) {
-            post.append("/");
-            post.append(comments);
-        } else if(comment_id.length() > 0) {
-            post.append("/");
-            post.append(comment_id);
-        }
-        post.append(" ");
-        post.append("http://point.im/");
-        post.append(post_id);
-
-        bot.putOutbound(Message.makeTextMessage(user, post.toString()));
+        if(post.length() > 0)
+            bot.putOutbound(Message.makeTextMessage(user, post.toString()));
     }
 
     @Override
