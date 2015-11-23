@@ -2,6 +2,7 @@ package ru.bit1.pointim.bot;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.xml.DOMConfigurator;
 import ru.bit1.pointim.bot.api.PointApi;
 import ru.bit1.pointim.bot.api.TelegramApi;
 import ru.bit1.pointim.bot.pojo.Cache;
@@ -98,7 +99,8 @@ public class PointImBot implements Runnable {
 
     public static void main(String[] args) {
         try {
-            BasicConfigurator.configure();
+            //BasicConfigurator.configure();
+            DOMConfigurator.configure("log4j.xml");
             Thread telegramThread  = new Thread(new PointImBot(args[0]));
             telegramThread.start();
             telegramThread.join();
