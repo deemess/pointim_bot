@@ -210,7 +210,7 @@ public class PointApi {
             String responce = callApiPost(url, params, user.getPointToken(), user.getPointCsrf_token());
 
             Map json = (Map) parser.parse(responce);
-            if (json.containsKey("ok") && (boolean) json.get("ok")) {
+            if (json.containsKey("ok") && (Boolean) json.get("ok")) {
                 return null;
             }
 
