@@ -18,7 +18,8 @@ public class Command {
         PING,
         NOT_IMPLEMENTED,
         UNKNOWN,
-        COMMENT
+        COMMENT,
+        RECOMMEND
     }
 
     private static final HashMap<Type, String> description = new HashMap<Type, String>();

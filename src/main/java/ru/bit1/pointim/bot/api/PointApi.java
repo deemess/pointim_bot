@@ -187,10 +187,39 @@ public class PointApi {
             }
 
         } catch (Exception e) {
-            log.error("Unablel to create comment!", e);
+            log.error("Unable to create comment!", e);
         }
-        return "Unablel to create comment!";
+        return "Unable to create comment!";
     }
+
+    public String recommend(User user, String text, String postid, String to_comment) {
+        try {
+            if (!user.isPointLoggedIn())
+                return "Login first.";
+
+            ArrayList<Pair<String,String>> params = new ArrayList<>();
+
+            params.add(new Pair<>("text", text));
+            String url;
+            if(to_comment != null) {
+                url = "post/"+postid+"/"+to_comment+"/r";
+            } else {
+                url = "post/"+postid+"/r";
+            }
+
+            String responce = callApiPost(url, params, user.getPointToken(), user.getPointCsrf_token());
+
+            Map json = (Map) parser.parse(responce);
+            if (json.containsKey("ok") && (boolean) json.get("ok")) {
+                return null;
+            }
+
+        } catch (Exception e) {
+            log.error("Unable to recommend!", e);
+        }
+        return "Unable to recommend!";
+    }
+
 
     public String getpost(User user, String postid) {
         try {

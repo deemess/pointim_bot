@@ -121,7 +121,13 @@ public class CommandParser {
         Matcher matcher = pattern.matcher(msg.getReplyTo());
         if(matcher.find()) {
             ArrayList<String> args = new ArrayList<>();
-            args.add(msg.getText());
+            if(msg.getText().startsWith("!")) {
+                args.add(msg.getText().substring(1));
+                cmd.setType(Command.Type.RECOMMEND);
+            } else {
+                args.add(msg.getText());
+                cmd.setType(Command.Type.COMMENT);
+            }
 
             String postid = matcher.group(1);
             if(postid != null && postid.length() > 0)
@@ -133,7 +139,6 @@ public class CommandParser {
 
             cmd.setArgs(args);
             cmd.setArgc(args.size());
-            cmd.setType(Command.Type.COMMENT);
         } else {
             //return "Unable to find post id and/or comment id!";
         }
