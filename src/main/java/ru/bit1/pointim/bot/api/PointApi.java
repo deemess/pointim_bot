@@ -213,6 +213,9 @@ public class PointApi {
             if (json.containsKey("ok") && (Boolean) json.get("ok")) {
                 return null;
             }
+            if (json.containsKey("comment_id")) {
+                return "Recommended #"+postid+"/" + json.get("comment_id") + " . http://point.im/"+postid;
+            }
 
         } catch (Exception e) {
             log.error("Unable to recommend!", e);
