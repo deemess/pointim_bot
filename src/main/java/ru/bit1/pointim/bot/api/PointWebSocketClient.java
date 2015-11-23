@@ -68,8 +68,13 @@ public class PointWebSocketClient extends WebSocketClient {
         }
 
         String text = "", author = null, totext = null, post_id = null, html = null, tags = "", a = null, post_author="",post_text="";
-        String comments = "", comment_id="";
+        String comments = "", comment_id="", files="";
 
+        if(json.containsKey("files") && json.get("files") != null) {
+            for(Object file : (List)json.get("files")) {
+                files += "http://i.point.im/m/"+file.toString() + "\n";
+            }
+        }
         if(json.containsKey("comment_id") && json.get("comment_id") != null) {
             comment_id = json.get("comment_id").toString();
         }
@@ -124,6 +129,10 @@ public class PointWebSocketClient extends WebSocketClient {
                 post.append(post_text.substring(0, 1000));
                 post.append(" ...");
             }
+            if(!"".equals(files)) {
+                post.append("\n");
+                post.append(files);
+            }
         } else { //simple post or comment
             post.append("@");
             post.append(author);
@@ -144,6 +153,10 @@ public class PointWebSocketClient extends WebSocketClient {
                 post.append("\n");
             }
             post.append(text);
+            if(!"".equals(files)) {
+                post.append("\n");
+                post.append(files);
+            }
         }
         post.append("\n#");
         post.append(post_id);
