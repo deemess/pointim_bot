@@ -23,10 +23,10 @@ public class Command {
         RECOMMEND
     }
 
-    private static final HashMap<Type, String> description = new HashMap<Type, String>();
-    private static final HashMap<String, Type> typeMap = new HashMap<String, Type>();
-    private static final HashMap<Type, Integer> argcMap = new HashMap<Type, Integer>();
-    private static final ArrayList<Type> describeOnly = new ArrayList<Type>();
+    private static final HashMap<Type, String> description = new HashMap<>();
+    private static final HashMap<String, Type> typeMap = new HashMap<>();
+    private static final HashMap<Type, Integer> argcMap = new HashMap<>();
+    private static final ArrayList<Type> describeOnly = new ArrayList<>();
 
     {
         typeMap.put("start", Type.HELP);
@@ -61,7 +61,7 @@ public class Command {
         description.put(Type.PING, "pong");
         description.put(Type.LOGIN, "Login to point.im.\nUsage: login <user> <password>\n"+
                 "You must be logged in with username and password to which you registered for the microblog service.\n"+
-                "If you are not registered - do it in http:\\\\point.im\\register");
+                "If you are not registered - do it in http://point.im/register");
         description.put(Type.LOGOUT, "Logout from point.im.\nUsage: logout\n"+"and goodbye my sweet prince.");
         description.put(Type.POST, "Create new post.\nUsage: post <tag1,tag2,tag3> <text>\n"+
                 "Tags are written without spaces and without <> \n"+
