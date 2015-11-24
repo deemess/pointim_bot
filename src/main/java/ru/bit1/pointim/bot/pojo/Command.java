@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 /**
  * Created by dmitry on 04/07/15.
+ * Modified by netmoose on 23/11/15
  */
 public class Command {
 
@@ -58,17 +59,30 @@ public class Command {
         argcMap.put(Type.UNKNOWN, 0);
 
         description.put(Type.PING, "pong");
-        description.put(Type.LOGIN, "Login to point.im.\nUsage: login <user> <password>");
-        description.put(Type.LOGOUT, "Logout to point.im.\nUsage: logout");
-        description.put(Type.POST, "Create new post.\nUsage: post <tag1,tag2,tag3> <text>");
-        description.put(Type.PRIVATE_POST, "Create new private post.\n"+
-                "Usage: ppost <tag1,tag2,tag3> <text>\n" +
-                "Usage: pm <tag1,tag2,tag3> <text>\n" +
-                "Usage: p <tag1,tag2,tag3> <text>");
+        description.put(Type.LOGIN, "Login to point.im.\nUsage: login <user> <password>\n"+
+                "You must be logged in with username and password to which you registered for the microblog service.\n"+
+                "If you are not registered - do it in http:\/\/point.im\/register");
+        description.put(Type.LOGOUT, "Logout from point.im.\nUsage: logout\n"+"and goodbye my sweet prince.");
+        description.put(Type.POST, "Create new post.\nUsage: post <tag1,tag2,tag3> <text>\n"+
+                "Tags are written without spaces and without <> \n"+
+                "(this is just for the convenience of the show)\n"+
+                "and then a mandatory space and then a text of your message.");
+        description.put(Type.PRIVATE_POST, "Create new private post. It will see only you or the specified @nicknames recipients.\n"+
+                "Usage: ppost <tag1,tag2,tag3> [@nicknames] <text>\n" +
+                "Usage: pm <tag1,tag2,tag3> [@nicknames] <text>\n" +
+                "Usage: p <tag1,tag2,tag3> [@nicknames] <text>\n"+
+                "[@nicknames] - do not required");
         description.put(Type.SHOW_POST, "Show post content.\nUsage: #<post_id>\nUsage: get <post_id>");
         description.put(Type.NOT_IMPLEMENTED, "This feauture currently not implemented.\n");
         description.put(Type.UNKNOWN, "Unknown command.");
-        description.put(Type.HELP, "This is bot for point.im microblog service.\nCurrently implemented commands:\nhelp\nlogin\nlogout\npost\nget\npm\n");
+        description.put(Type.HELP, "This is bot for point.im microblog service.\n"+
+                "Currently implemented commands:\n"+
+                "help - this help.\n"+
+                "login - log in user profile on point.im. For more help send this command without parameters.\n"+
+                "logout - log out and off sending messages from this bot.\n"+
+                "post - send message. For more help send this command without parameters.\n"+
+                "get - get above message from microblog feed. For more help send this command without parameters.\n"+
+                "pm - send personal messages to user. For more help send this command without parameters.\n");
     }
 
     public static Type getType(String commandText) {
