@@ -68,6 +68,8 @@ public class TelegramApi {
                         }
                         messages.add(msg);
                         //log.debug("Received Message: " + msg);
+                    } else if(message != null && message.containsKey("photo")) {
+                        log.debug("Received photo message: "+message);
                     }
                 }
             }
