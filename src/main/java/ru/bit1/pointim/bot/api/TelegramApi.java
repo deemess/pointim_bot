@@ -60,8 +60,9 @@ public class TelegramApi {
                         buffstream.write(data, 0, count);
                     }
                 }
-
-                return buffstream.toByteArray();
+                byte[] file = buffstream.toByteArray();
+                log.debug("Received image:"+fileId+" size:"+file.length);
+                return file;
             }
 
         } catch (Exception e) {

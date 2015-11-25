@@ -48,9 +48,11 @@ public class InboundHandler implements Runnable {
         //get telegram photo file
         byte[] file = bot.getTelegram().getFile(msg.getFileId());
         //put file in the dump bitcheese
-        String savedImage = bot.getBitcheese().dumpImage(file, "image/jpeg"/*URLConnection.guessContentTypeFromName()*/,Long.toHexString(System.currentTimeMillis()));
-        msg.getUser().getPendingImages().add(savedImage);
-        bot.putOutbound(Message.makeTextResponce(msg, "Image saved to " + savedImage + "\nWill be used in the next post automatically.\nTo check pending images type command: images "));
+        String savedImage = bot.getBitcheese().dumpImage(file, "image/jpeg"/*URLConnection.guessContentTypeFromName()*/,Long.toHexString(System.currentTimeMillis())+".jpeg");
+        if(savedImage != null) {
+            msg.getUser().getPendingImages().add(savedImage);
+            bot.putOutbound(Message.makeTextResponce(msg, "Image saved to " + savedImage + "\nWill be used in the next post automatically.\nTo check pending images type command: images "));
+        }
     }
 
     private void handleTextMessage(Message msg) {

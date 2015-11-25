@@ -52,6 +52,8 @@ public class DumpBitcheeseApi {
                 String imageurl = connection.getHeaderFields().get("Location").get(0);
                 log.info("Successfully uploaded image:"+filename+" size: " + image.length + " to: " + imageurl);
                 return imageurl;
+            } else {
+                log.error("Received "+responseCode+" from dump.bitcheese.net!");
             }
 
         } catch (IOException e) {
