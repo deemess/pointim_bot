@@ -88,6 +88,7 @@ public class InboundHandler implements Runnable {
                         text += imageurl + "\n";
                     }
                 }
+                msg.getUser().getPendingImages().clear();
                 error = bot.getPoint().post(msg.getUser(), Arrays.asList(cmd.getArgs().get(0).split(",")), text, false);
                 bot.putOutbound(Message.makeTextResponce(msg, error == null ? "Post sent." : error));
                 break;
