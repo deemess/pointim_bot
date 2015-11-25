@@ -53,7 +53,7 @@ public class TelegramApi {
                 urlFileConnection.connect();
                 ByteArrayOutputStream buffstream = new ByteArrayOutputStream(1*1024);
 
-                try(DataInputStream is = new DataInputStream(urlConnection.getInputStream())) {
+                try(DataInputStream is = new DataInputStream(urlFileConnection.getInputStream())) {
                     final byte data[] = new byte[1024];
                     int count;
                     while ((count = is.read(data, 0, 1024)) != -1) {
