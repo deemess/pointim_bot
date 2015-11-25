@@ -1,8 +1,8 @@
 package ru.bit1.pointim.bot;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import ru.bit1.pointim.bot.api.DumpBitcheeseApi;
 import ru.bit1.pointim.bot.api.PointApi;
 import ru.bit1.pointim.bot.api.TelegramApi;
 import ru.bit1.pointim.bot.pojo.Cache;
@@ -21,6 +21,7 @@ public class PointImBot implements Runnable {
     private final TelegramApi telegram;
     private final PointApi point;
     private final Cache cache;
+    private final DumpBitcheeseApi bitcheeseApi;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(5);
     private final ArrayBlockingQueue<Message> inqueue = new ArrayBlockingQueue<Message>(100);
     private final ArrayBlockingQueue<Message> outqueue = new ArrayBlockingQueue<Message>(100);
@@ -30,6 +31,7 @@ public class PointImBot implements Runnable {
         this.cache = new Cache(this);
         this.telegram = new TelegramApi(this.cache, telegramToken);
         this.point = new PointApi();
+        this.bitcheeseApi = new DumpBitcheeseApi();
         this.executorService.scheduleAtFixedRate(new InboundHandler(this), 1, 1, TimeUnit.MILLISECONDS);
         this.executorService.scheduleAtFixedRate(new OutboundHandler(this), 1, 1, TimeUnit.MILLISECONDS);
         this.executorService.scheduleAtFixedRate(new CachePersister(this.cache), 10000, 10000, TimeUnit.MILLISECONDS);
@@ -95,6 +97,10 @@ public class PointImBot implements Runnable {
 
     public PointApi getPoint() {
         return point;
+    }
+
+    public DumpBitcheeseApi getBitcheese() {
+        return bitcheeseApi;
     }
 
     public static void main(String[] args) {

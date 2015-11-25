@@ -16,6 +16,7 @@ public class Command {
         POST,
         PRIVATE_POST,
         SHOW_POST,
+        SHOW_IMAGES,
         PING,
         NOT_IMPLEMENTED,
         UNKNOWN,
@@ -42,6 +43,7 @@ public class Command {
         typeMap.put("ppost", Type.PRIVATE_POST);
         typeMap.put("pm", Type.PRIVATE_POST);
         typeMap.put("p", Type.PRIVATE_POST);
+        typeMap.put("images", Type.SHOW_IMAGES);
 
         describeOnly.add(Type.HELP);
         describeOnly.add(Type.PING);
@@ -54,6 +56,7 @@ public class Command {
         argcMap.put(Type.POST, 2);
         argcMap.put(Type.PRIVATE_POST, 2);
         argcMap.put(Type.SHOW_POST, 1);
+        argcMap.put(Type.SHOW_IMAGES, 0);
         argcMap.put(Type.PING, 0);
         argcMap.put(Type.NOT_IMPLEMENTED, 0);
         argcMap.put(Type.UNKNOWN, 0);
@@ -73,6 +76,7 @@ public class Command {
                 "Usage: p <tag1,tag2,tag3> [@nicknames] <text>\n"+
                 "[@nicknames] - do not required");
         description.put(Type.SHOW_POST, "Show post content.\nUsage: #<post_id>\nUsage: get <post_id>");
+        description.put(Type.SHOW_IMAGES, "Show pending images.\n");
         description.put(Type.NOT_IMPLEMENTED, "This feauture currently not implemented.\n");
         description.put(Type.UNKNOWN, "Unknown command.");
         description.put(Type.HELP, "This is bot for point.im microblog service.\n"+
@@ -82,7 +86,8 @@ public class Command {
                 "logout - log out and off sending messages from this bot.\n"+
                 "post - send message. For more help send this command without parameters.\n"+
                 "get - get above message from microblog feed. For more help send this command without parameters.\n"+
-                "pm - send personal messages to user. For more help send this command without parameters.\n");
+                "pm - send personal messages to user. For more help send this command without parameters.\n"+
+                "images - show pending images for post.\n");
     }
 
     public static Type getType(String commandText) {

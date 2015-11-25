@@ -10,12 +10,17 @@ import java.net.URL;
  * Created by dmitry on 24/11/15.
  */
 public class DumpBitcheeseApi {
-    final static Logger log = Logger.getLogger(PointApi.class);
-    final static String charset = "UTF-8";
-    final static String CRLF = "\r\n"; // Line separator required by multipart/form-data.
-    final static String urlToConnect = "http://dump.bitcheese.net/upload-image?simple";
 
-    public static String dumpImage(byte[] image, String type, String filename) {
+    final Logger log = Logger.getLogger(PointApi.class);
+    final String charset = "UTF-8";
+    final String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+    final String urlToConnect = "http://dump.bitcheese.net/upload-image?simple";
+
+    public DumpBitcheeseApi() {
+
+    }
+
+    public String dumpImage(byte[] image, String type, String filename) {
         try {
 
             String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.

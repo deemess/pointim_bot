@@ -3,18 +3,11 @@ package ru.bit1.pointim.bot.pojo;
 import ru.bit1.pointim.bot.PointImBot;
 import ru.bit1.pointim.bot.api.PointWebSocketClient;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 import javax.xml.bind.DatatypeConverter;
-import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -27,11 +20,16 @@ public class User {
     private String pointToken;
     private String pointCsrf_token;
     private PointWebSocketClient webSocket;
+    private final ArrayList<String> pendingImages = new ArrayList<>();
 
     private final IObjectUpdateListener listener;
 
     public User(IObjectUpdateListener listener) {
         this.listener = listener;
+    }
+
+    public ArrayList<String> getPendingImages() {
+        return pendingImages;
     }
 
     public String getLogin() {

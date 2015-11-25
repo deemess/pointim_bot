@@ -17,9 +17,18 @@ public class Message {
     private MessageType type;
     private User user;
     private String replyTo;
+    private String fileId;
 
     public Message() {
 
+    }
+
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 
     public String getText() {
@@ -56,7 +65,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return "{type="+type+"; user="+user+"; text="+text+";reply_to="+replyTo+";}";
+        return "{type="+type+"; user="+user+"; text="+text+"; reply_to="+replyTo+"; file_id="+fileId+"; }";
     }
 
     public static Message makeTextResponce(Message msg, String text) {
