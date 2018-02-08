@@ -1,0 +1,25 @@
+version: '3'
+services:
+
+
+    pointim_bot:
+        build: ./
+        image: paskal/pointim_bot
+        hostname: pointim_bot
+        restart: always
+        container_name: pointim_bot
+
+        logging:
+          driver: json-file
+          options:
+              max-size: "10m"
+              max-file: "5"
+
+        # persistent cache, set a proper location for it
+        # volumes:
+        #     - /root/cache.bin:/usr/pointim_bot/cache.bin
+
+        # telegram login and password
+        # environment:
+        #     - LOGIN=<12345678910>
+        #     - PASSWORD=<long_password_here>
